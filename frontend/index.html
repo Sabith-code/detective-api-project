@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🕵️ Detective Case Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Detective Case Manager</h1>
+    <div class="form">
+      <input id="title" placeholder="Case Title" />
+      <textarea id="desc" placeholder="Case Description"></textarea>
+      <button onclick="createCase()">Add Case</button>
+    </div>
+    <ul id="cases" class="card-list"></ul>
+  </div>
+
+  <script>
+    const api = "http://localhost:5000";
+
+    function createElementFromHTML(htmlString) {
+      const div = document.createElement('div');
+      div.innerHTML = htmlString.trim();
+      return div.firstChild;
+    }
+
+    async function fetchCases() {
+      const res = await fetch(`${api}/cases`);
+      const data = await res.json();
+      const ul = document.getElementById("cases");
+      ul.innerHTML = '';
+      for (let c of data) {
+        const clues = await fetch(`${api}/clues/${c._id}`).then(r => r.json());
+        const suspects = await fetch(`${api}/suspects/${c._id}`).then(r => r.json());
+
+        const li = createElementFromHTML(`
+          <li class="card" id="case-${c._id}">
+            <h2 contenteditable="true" class="editable title">${c.title}</h2>
+            <p contenteditable="true" class="editable desc">${c.description}</p>
+            <div class="section clues">
+              <h4>Clues</h4>
+              <ul>
+                ${clues.map(clue => `<li>${clue.detail}</li>`).join('')}
+              </ul>
+              <input placeholder="New Clue" id="clue-${c._id}" />
+              <button onclick="addClue('${c._id}')">Add Clue</button>
+            </div>
+            <div class="section suspects">
+              <h4>Suspects</h4>
+              <ul>
+                ${suspects.map(s => `<li>${s.name}</li>`).join('')}
+              </ul>
+              <input placeholder="New Suspect" id="suspect-${c._id}" />
+              <button onclick="addSuspect('${c._id}')">Add Suspect</button>
+            </div>
+            <div class="actions">
+              <button onclick="updateCase('${c._id}')">Save</button>
+              <button onclick="deleteCase('${c._id}')">Delete</button>
+            </div>
+          </li>
+        `);
+
+        ul.appendChild(li);
+      }
+    }
+
+    async function createCase() {
+      const titleInput = document.getElementById("title");
+      const descInput = document.getElementById("desc");
+      const title = titleInput.value;
+      const description = descInput.value;
+      if (!title || !description) return;
+
+      const res = await fetch(`${api}/cases`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description })
+      });
+      const newCase = await res.json();
+
+      // Reset form
+      titleInput.value = '';
+      descInput.value = '';
+
+      fetchCases();
+    }
+
+    async function updateCase(id) {
+      const card = document.getElementById(`case-${id}`);
+      const title = card.querySelector(".title").textContent;
+      const description = card.querySelector(".desc").textContent;
+
+      await fetch(`${api}/cases/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, description })
+      });
+    }
+
+    async function deleteCase(id) {
+      await fetch(`${api}/cases/${id}`, { method: 'DELETE' });
+      document.getElementById(`case-${id}`).remove();
+    }
+
+    async function addClue(caseId) {
+      const input = document.getElementById(`clue-${caseId}`);
+      const detail = input.value;
+      if (!detail) return;
+
+      await fetch(`${api}/clues`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ case_id: caseId, detail })
+      });
+      fetchCases();
+    }
+
+    async function addSuspect(caseId) {
+      const input = document.getElementById(`suspect-${caseId}`);
+      const name = input.value;
+      if (!name) return;
+
+      await fetch(`${api}/suspects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ case_id: caseId, name })
+      });
+      fetchCases();
+    }
+
+    fetchCases();
+  </script>
+</body>
+</html>
