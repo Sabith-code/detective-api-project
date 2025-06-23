@@ -211,20 +211,20 @@ Below is a screenshot from the generated HTML coverage report:
 
 ## Running Tests
 
-# To run all tests:
+### To run all tests:
 ```bash
 pytest
 ```
-# To check test coverage:
+### To check test coverage:
 ```bash
 pytest --cov=backend tests/
 ```
-# To generate an HTML report:
+### To generate an HTML report:
 ```bash
 coverage html
 ```
 Then open the report at htmlcov/index.html in your browser.
 
-### 📊 Test Coverage
+# 📊 Test Coverage
 
 ![Test Coverage](docs/Screenshot%202025-06-23%20184426.png)
