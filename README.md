@@ -227,4 +227,4 @@ Then open the report at htmlcov/index.html in your browser.
 
 # 📊 Test Coverage
 
-![Test Coverage](docs/Screenshot%202025-06-23%20184426.png)
+![Test Coverage](docs/Screenshot%202025-06-23%20195748.png)
