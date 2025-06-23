@@ -6,9 +6,9 @@ This project is a **custom API-powered detective case management system** that e
 
 Whether it's a high-profile bank robbery or a mysterious disappearance, detectives can use this tool to:
 
-- 🗂️ Organize multiple investigation cases  
-- 🧩 Collect and track important clues  
-- 🧑‍🤝‍🧑 Maintain lists of potential suspects  
+-  Organize multiple investigation cases  
+-  Collect and track important clues  
+- Maintain lists of potential suspects  
 
 ---
 
