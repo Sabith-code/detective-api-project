@@ -186,4 +186,45 @@ venv/
 __pycache__/
 *.pyc
 ```
+### Testing & Coverage
+This project includes comprehensive test coverage using Pytest, ensuring the correctness and reliability of the API server.
 
+## Types of Tests Implemented
+# Unit Tests:
+Tested core logic and validation functions, with and without mocking the database.
+
+# Integration Tests:
+Verified interactions between the Flask API and MongoDB database for CRUD operations.
+
+# API Tests:
+Ensured that all REST API endpoints behave correctly for valid and invalid inputs.
+
+## Testing Tools & Frameworks
+
+- **pytest**: For writing and running unit, integration, and API tests
+- **pytest-cov**: To measure test coverage
+- **unittest.mock**: Used for mocking MongoDB in isolated unit tests
+
+## Test Coverage Achieved
+Achieved over 90% code coverage, including edge cases and error handling.
+Below is a screenshot from the generated HTML coverage report:
+
+## Running Tests
+
+#To run all tests:
+```bash
+pytest
+```
+#To check test coverage:
+```bash
+pytest --cov=backend tests/
+```
+#To generate an HTML report:
+```bash
+coverage html
+```
+Then open the report at htmlcov/index.html in your browser.
+
+### 📊 Test Coverage
+
+![Test Coverage](docs/Screenshot%202025-06-23%20184426.png)
