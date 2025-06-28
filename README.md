@@ -239,9 +239,6 @@ This project uses **Keploy** to automatically capture and replay API test cases 
 
 ### ✅ Test Report Screenshot
 
-> 📸 Add a screenshot of your test results here  
-> Example:
-
 ![Keploy Test Report](/docs/Screenshot%202025-06-28%20113242.png)
 
 ---
@@ -253,10 +250,7 @@ This project is tested automatically using **GitHub Actions** on every push or p
 
 ### ✅ Status
 
-![CI/CD Pipeline](https://github.com/Sabith-code/detective-api-project/actions/workflows/ci.yml/badge.svg)
+![CI/CD Pipeline](/docs/Screenshot%20(51).png)
 
 ### 🔗 CI/CD Config File
 
-View the [CI/CD GitHub Actions config file](https://github.com/Sabith-code/detective-api-project/blob/main/.github/workflows/ci.yml)
-
----
