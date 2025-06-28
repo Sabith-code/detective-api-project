@@ -252,3 +252,8 @@ This project is tested automatically using **GitHub Actions** on every push or p
 
 ![CI/CD Pipeline](/docs/Screenshot%20(51).png)
 
+
+
+🔗 [View GitHub Actions CI/CD Config](https://github.com/Sabith-code/detective-api-project/blob/main/.github/workflows/keploy.yml)
+
+![CI/CD Pipeline](https://github.com/Sabith-code/detective-api-project/actions/workflows/keploy.yml/badge.svg)
