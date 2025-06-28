@@ -21,6 +21,8 @@ Whether it's a high-profile bank robbery or a mysterious disappearance, detectiv
   - Add and list **clues** tied to specific cases
   - Add and list **suspects** associated with each case
 - **API Testing**: Endpoints can be tested using tools like `curl`, Postman, or your browser.
+- Integrated API Testing using [Keploy](https://keploy.io)
+- CI/CD pipeline using GitHub Actions
 
 ---
 
@@ -46,6 +48,8 @@ Imagine you're a detective managing dozens of open cases — each with unique cl
 - Suspects (linked to cases)
 -  Powered by Flask + MongoDB backend
 - RESTful API endpoints for integration
+- Testing: Keploy API Testing Suite
+- CI/CD: GitHub Actions
 
 ---
 
@@ -228,3 +232,31 @@ Then open the report at htmlcov/index.html in your browser.
 # 📊 Test Coverage
 
 ![Test Coverage](docs/Screenshot%202025-06-23%20195748.png)
+
+## 🧪 Keploy API Testing
+
+This project uses **Keploy** to automatically capture and replay API test cases from real requests and responses.
+
+### ✅ Test Report Screenshot
+
+> 📸 Add a screenshot of your test results here  
+> Example:
+
+![Keploy Test Report](/docs/Screenshot%202025-06-28%20113242.png)
+
+---
+
+
+## ⚙️ CI/CD Integration
+
+This project is tested automatically using **GitHub Actions** on every push or pull request to `main`.
+
+### ✅ Status
+
+![CI/CD Pipeline](https://github.com/Sabith-code/detective-api-project/actions/workflows/ci.yml/badge.svg)
+
+### 🔗 CI/CD Config File
+
+View the [CI/CD GitHub Actions config file](https://github.com/Sabith-code/detective-api-project/blob/main/.github/workflows/ci.yml)
+
+---
