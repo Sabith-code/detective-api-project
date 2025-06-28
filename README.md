@@ -229,11 +229,11 @@ coverage html
 ```
 Then open the report at htmlcov/index.html in your browser.
 
-# 📊 Test Coverage
+# Test Coverage
 
 ![Test Coverage](docs/Screenshot%202025-06-23%20195748.png)
 
-## 🧪 Keploy API Testing
+##  Keploy API Testing
 
 This project uses **Keploy** to automatically capture and replay API test cases from real requests and responses.
 
@@ -244,13 +244,11 @@ This project uses **Keploy** to automatically capture and replay API test cases 
 ---
 
 
-## ⚙️ CI/CD Integration
+## CI/CD Integration
 
 This project is tested automatically using **GitHub Actions** on every push or pull request to `main`.
 
 ### ✅ Status
 
 ![CI/CD Pipeline](/docs/Screenshot%20(51).png)
-
-### 🔗 CI/CD Config File
 
