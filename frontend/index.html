@@ -37,26 +37,34 @@
     }
 
     async function addCase() {
-      const title = document.getElementById("caseTitle").value.trim();
-      const description = document.getElementById("caseDescription").value.trim();
-      if (!title || !description) return;
+  const title = document.getElementById("caseTitle").value.trim();
+  const description = document.getElementById("caseDescription").value.trim();
+  if (!title || !description) return;
 
-      try {
-        const res = await fetch(`${backendUrl}/cases`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, description }),
-        });
-        const newCase = await res.json();
-        if (newCase && newCase.id) {
-          renderCase(newCase);
-        }
-        document.getElementById("caseTitle").value = "";
-        document.getElementById("caseDescription").value = "";
-      } catch (err) {
-        console.error("Failed to add case:", err);
-      }
+  try {
+    const res = await fetch(`${backendUrl}/cases`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, description }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      console.error("Failed to add case:", err);
+      alert("❌ Failed to add case: " + (err.error || res.statusText));
+      return;
     }
+
+    const newCase = await res.json();
+    renderCase(newCase);  // 👈 Instantly render the new case
+    document.getElementById("caseTitle").value = "";
+    document.getElementById("caseDescription").value = "";
+  } catch (err) {
+    console.error("Failed to add case:", err);
+    alert("❌ Network error while adding case.");
+  }
+}
+
 
     function renderCase(c) {
       if (!c.id || !c.title || !c.description) {
