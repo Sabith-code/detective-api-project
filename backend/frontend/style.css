@@ -1,0 +1,97 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #f5ba13;
+}
+
+.form {
+  background: #1e1e1e;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #2c2c2c;
+  color: #f1f1f1;
+}
+
+button {
+  background-color: #f5ba13;
+  color: #121212;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #ffc107;
+}
+
+.card-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.card {
+  background-color: #1e1e1e;
+  padding: 15px;
+  border: 1px solid #333;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.editable {
+  outline: none;
+}
+
+h2.title {
+  color: #ffffff;
+  margin: 0 0 5px;
+}
+
+p.desc {
+  margin: 5px 0 15px;
+  color: #ccc;
+}
+
+.section {
+  margin-top: 10px;
+}
+
+.section h4 {
+  margin-bottom: 5px;
+  color: #f5ba13;
+}
+
+.section ul {
+  padding-left: 20px;
+  color: #bbb;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}

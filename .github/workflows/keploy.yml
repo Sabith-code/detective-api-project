@@ -23,7 +23,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: 3.11
 
     - name: Install Python Dependencies
       run: |
@@ -31,7 +31,7 @@ jobs:
 
     - name: Start Flask App in Background
       run: |
-        nohup python3 backend/app.py > app.log 2>&1 &
+        nohup python3 backend/app.py & 
         sleep 10
 
     - name: Install Keploy CLI
@@ -39,7 +39,5 @@ jobs:
         curl --silent -L https://keploy.io/ent/install.sh | bash
 
     - name: Run Keploy Test Suite
-      env:
-        KEPLOY_API_KEY: ${{ secrets.KEPLOY_API_KEY }}
       run: |
-        keploy test-suite --app=f9952c10-ce4a-4502-ba1d-2ff913cb0701 --base-path http://localhost:5000 --cloud
+        export KEPLOY_API_KEY=hAh/sIjLZRECFRto8Q== && keploy test-suite --app=f9952c10-ce4a-4502-ba1d-2ff913cb0701 --base-path http://localhost:5000 --cloud

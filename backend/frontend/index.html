@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detective Case Manager</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Detective Case Manager</h1>
+
+    <!-- Case Form -->
+    <div class="form">
+      <h2>Add New Case</h2>
+      <input type="text" id="caseTitle" placeholder="Case Title" required />
+      <textarea id="caseDescription" placeholder="Case Description" required></textarea>
+      <button onclick="addCase()">Add Case</button>
+    </div>
+
+    <!-- Case List -->
+    <ul id="caseList" class="card-list"></ul>
+  </div>
+
+  <script>
+    const backendUrl = "http://localhost:5000";
+
+    async function fetchCases() {
+      try {
+        const res = await fetch(`${backendUrl}/cases`);
+        const cases = await res.json();
+        document.getElementById("caseList").innerHTML = "";
+        cases.forEach(renderCase);
+      } catch (err) {
+        console.error("Error fetching cases:", err);
+      }
+    }
+
+    async function addCase() {
+      const title = document.getElementById("caseTitle").value.trim();
+      const description = document.getElementById("caseDescription").value.trim();
+      if (!title || !description) return;
+
+      try {
+        const res = await fetch(`${backendUrl}/cases`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, description }),
+        });
+        const newCase = await res.json();
+        if (newCase && newCase.id) {
+          renderCase(newCase);
+        }
+        document.getElementById("caseTitle").value = "";
+        document.getElementById("caseDescription").value = "";
+      } catch (err) {
+        console.error("Failed to add case:", err);
+      }
+    }
+
+    function renderCase(c) {
+      if (!c.id || !c.title || !c.description) {
+        console.warn("Skipping invalid case:", c);
+        return;
+      }
+
+      const li = document.createElement("li");
+      li.className = "card";
+      li.innerHTML = `
+        <h2 class="title">${c.title}</h2>
+        <p class="desc">${c.description}</p>
+
+        <div class="section">
+          <h4>Clues</h4>
+          <ul id="clueList-${c.id}"></ul>
+          <input type="text" id="clueInput-${c.id}" placeholder="Add a clue" />
+          <button onclick="addClue('${c.id}')">Add Clue</button>
+        </div>
+
+        <div class="section">
+          <h4>Suspects</h4>
+          <ul id="suspectList-${c.id}"></ul>
+          <input type="text" id="suspectInput-${c.id}" placeholder="Add a suspect" />
+          <button onclick="addSuspect('${c.id}')">Add Suspect</button>
+        </div>
+
+        <div class="actions">
+          <button onclick="deleteCase('${c.id}')">Delete Case</button>
+        </div>
+      `;
+      document.getElementById("caseList").appendChild(li);
+      fetchClues(c.id);
+      fetchSuspects(c.id);
+    }
+
+    async function deleteCase(id) {
+      await fetch(`${backendUrl}/cases/${id}`, { method: "DELETE" });
+      fetchCases();
+    }
+
+    async function fetchClues(caseId) {
+      try {
+        const res = await fetch(`${backendUrl}/clues/${caseId}`);
+        const clues = await res.json();
+        const ul = document.getElementById(`clueList-${caseId}`);
+        ul.innerHTML = "";
+        clues.forEach(clue => {
+          const li = document.createElement("li");
+          li.textContent = clue.detail;
+          ul.appendChild(li);
+        });
+      } catch (err) {
+        console.error("Failed to fetch clues for case", caseId, err);
+      }
+    }
+
+    async function addClue(caseId) {
+      const input = document.getElementById(`clueInput-${caseId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      await fetch(`${backendUrl}/clues`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ case_id: caseId, detail: text }),
+      });
+      input.value = "";
+      fetchClues(caseId);
+    }
+
+    async function fetchSuspects(caseId) {
+      try {
+        const res = await fetch(`${backendUrl}/suspects/${caseId}`);
+        const suspects = await res.json();
+        const ul = document.getElementById(`suspectList-${caseId}`);
+        ul.innerHTML = "";
+        suspects.forEach(suspect => {
+          const li = document.createElement("li");
+          li.textContent = suspect.name;
+          ul.appendChild(li);
+        });
+      } catch (err) {
+        console.error("Failed to fetch suspects for case", caseId, err);
+      }
+    }
+
+    async function addSuspect(caseId) {
+      const input = document.getElementById(`suspectInput-${caseId}`);
+      const name = input.value.trim();
+      if (!name) return;
+      await fetch(`${backendUrl}/suspects`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ case_id: caseId, name }),
+      });
+      input.value = "";
+      fetchSuspects(caseId);
+    }
+
+    // Initial load
+    fetchCases();
+  </script>
+</body>
+</html>
