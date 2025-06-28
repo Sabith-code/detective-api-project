@@ -1,95 +1,90 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from bson import ObjectId
-from bson.errors import InvalidId
-from db import cases, clues, suspects
+from bson.objectid import ObjectId
+from pymongo import MongoClient
 
 app = Flask(__name__)
 CORS(app)
 
+# MongoDB setup
+client = MongoClient("mongodb://localhost:27017/")
+db = client["detective_db"]
+cases = db["cases"]
+clues = db["clues"]
+suspects = db["suspects"]
+
+# Utility to convert ObjectId to string
 def to_json(doc):
     doc["id"] = str(doc["_id"])
     del doc["_id"]
     return doc
 
-def is_valid_objectid(id):
-    try:
-        ObjectId(id)
-        return True
-    except InvalidId:
-        return False
-
-@app.route("/cases", methods=["POST"])
-def create_case():
-    data = request.json
-    title = data.get("title", "").strip()
-    description = data.get("description", "").strip()
-
-    if not title or not description:
-        return jsonify({"error": "Title and description required"}), 400
-
-    case = { "title": title, "description": description }
-    result = cases.insert_one(case)
-    case["id"] = str(result.inserted_id)
-    return jsonify(case), 201
+# ----------- CASE ROUTES -----------
 
 @app.route("/cases", methods=["GET"])
 def get_cases():
     all_cases = list(cases.find())
-    return jsonify([to_json(c) for c in all_cases]), 200
+    return jsonify([to_json(c) for c in all_cases])
 
-@app.route("/cases/<id>", methods=["DELETE"])
-def delete_case(id):
-    if not is_valid_objectid(id):
-        return jsonify({"error": "Invalid case ID"}), 400
-    cases.delete_one({"_id": ObjectId(id)})
-    clues.delete_many({"case_id": id})
-    suspects.delete_many({"case_id": id})
+@app.route("/cases", methods=["POST"])
+def add_case():
+    data = request.get_json()
+    title = data.get("title", "").strip()
+    description = data.get("description", "").strip()
+
+    if not title or not description:
+        return jsonify({"error": "Title and description are required."}), 400
+
+    result = cases.insert_one({"title": title, "description": description})
+    new_case = cases.find_one({"_id": result.inserted_id})
+    return jsonify(to_json(new_case)), 201
+
+@app.route("/cases/<case_id>", methods=["DELETE"])
+def delete_case(case_id):
+    cases.delete_one({"_id": ObjectId(case_id)})
+    clues.delete_many({"case_id": case_id})
+    suspects.delete_many({"case_id": case_id})
     return jsonify({"message": "Case deleted"}), 200
 
-@app.route("/clues", methods=["POST"])
-def create_clue():
-    data = request.json
-    case_id = data.get("case_id", "").strip()
-    detail = data.get("detail", "").strip()
-
-    if not case_id or not detail:
-        return jsonify({"error": "Case ID and detail required"}), 400
-
-    if not is_valid_objectid(case_id):
-        return jsonify({"error": "Invalid case ID"}), 400
-
-    result = clues.insert_one({ "case_id": case_id, "detail": detail })
-    return jsonify({"id": str(result.inserted_id)}), 201
+# ----------- CLUE ROUTES -----------
 
 @app.route("/clues/<case_id>", methods=["GET"])
 def get_clues(case_id):
-    if not is_valid_objectid(case_id):
-        return jsonify({"error": "Invalid case ID"}), 400
-    clue_list = list(clues.find({ "case_id": case_id }))
-    return jsonify([to_json(c) for c in clue_list]), 200
+    clue_list = list(clues.find({"case_id": case_id}))
+    return jsonify([to_json(c) for c in clue_list])
 
-@app.route("/suspects", methods=["POST"])
-def create_suspect():
-    data = request.json
-    case_id = data.get("case_id", "").strip()
-    name = data.get("name", "").strip()
+@app.route("/clues", methods=["POST"])
+def add_clue():
+    data = request.get_json()
+    case_id = data.get("case_id")
+    detail = data.get("detail", "").strip()
 
-    if not case_id or not name:
-        return jsonify({"error": "Case ID and name required"}), 400
+    if not case_id or not detail:
+        return jsonify({"error": "Case ID and clue detail are required."}), 400
 
-    if not is_valid_objectid(case_id):
-        return jsonify({"error": "Invalid case ID"}), 400
+    result = clues.insert_one({"case_id": case_id, "detail": detail})
+    return jsonify(to_json(clues.find_one({"_id": result.inserted_id}))), 201
 
-    result = suspects.insert_one({ "case_id": case_id, "name": name })
-    return jsonify({"id": str(result.inserted_id)}), 201
+# ----------- SUSPECT ROUTES -----------
 
 @app.route("/suspects/<case_id>", methods=["GET"])
 def get_suspects(case_id):
-    if not is_valid_objectid(case_id):
-        return jsonify({"error": "Invalid case ID"}), 400
-    suspect_list = list(suspects.find({ "case_id": case_id }))
-    return jsonify([to_json(s) for s in suspect_list]), 200
+    suspect_list = list(suspects.find({"case_id": case_id}))
+    return jsonify([to_json(s) for s in suspect_list])
+
+@app.route("/suspects", methods=["POST"])
+def add_suspect():
+    data = request.get_json()
+    case_id = data.get("case_id")
+    name = data.get("name", "").strip()
+
+    if not case_id or not name:
+        return jsonify({"error": "Case ID and suspect name are required."}), 400
+
+    result = suspects.insert_one({"case_id": case_id, "name": name})
+    return jsonify(to_json(suspects.find_one({"_id": result.inserted_id}))), 201
+
+# ----------- MAIN -----------
 
 if __name__ == "__main__":
     app.run(debug=True)
