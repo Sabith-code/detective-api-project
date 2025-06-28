@@ -1,0 +1,43 @@
+name: Keploy API Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  run-keploy-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+
+    - name: Install Python Dependencies
+      run: |
+        pip install flask flask-cors flask-restx pymongo
+
+    - name: Start Flask App in Background
+      run: |
+        nohup python3 backend/app.py & 
+        sleep 10
+
+    - name: Install Keploy CLI
+      run: |
+        curl --silent -L https://keploy.io/ent/install.sh | bash
+
+    - name: Run Keploy Test Suite
+      run: |
+        export KEPLOY_API_KEY=hAh/sIjLZRECFRto8Q== && keploy test-suite --app=f9952c10-ce4a-4502-ba1d-2ff913cb0701 --base-path http://localhost:5000 --cloud
